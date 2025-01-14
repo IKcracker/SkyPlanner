@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
+import background from "../../assets/images/background.jpg";
 
 const HomeScreen = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -13,7 +14,7 @@ const HomeScreen = () => {
       if (token) {
         setUser({ name: 'John Doe' });
       } else {
-        router.replace('/login'); 
+        router.replace('/login');
       }
     };
 
@@ -22,11 +23,11 @@ const HomeScreen = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
-    router.replace('/login'); 
+    router.replace('/login');
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={background} style={styles.container}>
       {user ? (
         <>
           <Text style={styles.welcomeText}>Welcome, {user.name}</Text>
@@ -35,7 +36,7 @@ const HomeScreen = () => {
       ) : (
         <Text style={styles.loadingText}>Loading...</Text>
       )}
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -44,16 +45,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#f5f9ff",
+    padding: 20,
   },
   welcomeText: {
     fontSize: 24,
-    color: "#333",
+    color: "#F7D0A9",
     marginBottom: 20,
   },
   loadingText: {
     fontSize: 18,
-    color: "#333",
+    color: "#E8DDD2",
   },
 });
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, ImageBackground } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import background from "../../assets/images/background.jpg";
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -32,9 +33,8 @@ const RegisterScreen = () => {
     }
   };
 
-
   return (
-    <View style={styles.container}>
+    <ImageBackground source={background} style={styles.container}>
       <Text style={styles.label}>Name</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} />
       <Text style={styles.label}>Email</Text>
@@ -45,7 +45,7 @@ const RegisterScreen = () => {
       <TextInput style={styles.input} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
       <Button title="Register" onPress={handleRegister} color="#FF914D" />
       <Button title="Already have an account? Login" onPress={() => router.push('/login')} color="#FFE5D3" />
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#333",
+    color: "#E8DDD2",
     marginBottom: 8,
   },
   input: {
