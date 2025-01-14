@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator, Pressable } from "react-native";
+import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator, Pressable, Image, FlatList, Switch, Animated } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentWeather } from "../../Redux/weather/weather";
+import { getCurrentWeather, getForecastDays, getForecastWeather, restartState } from "../../Redux/weather/weather";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
-  const { status, respond, error } = useSelector((state) => state.weather);
+  const { status, response, error } = useSelector((state) => state.weather);
+  const [isDate, setIsDate] = useState(false); // Track whether to show daily or hourly forecast
+  const [isSwitchOn, setIsSwitchOn] = useState(false); // Toggle between days and hours
   const dispatch = useDispatch();
+
+  const animatedSwitch = new Animated.Value(isSwitchOn ? 1 : 0); // For smooth transition
+
+  useEffect(() => {
+    dispatch(restartState());
+  }, []);
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(getCurrentWeather(query));
+      if (isDate) {
+        dispatch(getForecastWeather(query)); // Get forecast for hours
+      } else {
+        dispatch(getForecastDays(query)); // Get forecast for days
+      }
     }
   }, [status]);
 
@@ -20,10 +33,23 @@ function Home() {
     }
   }, [status]);
 
+  useEffect(() => {
+    Animated.timing(animatedSwitch, {
+      toValue: isSwitchOn ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [isSwitchOn]);
+
   const handleSearch = () => {
     if (query.trim()) {
       dispatch(getCurrentWeather(query));
     }
+  };
+
+  const toggleSwitch = () => {
+    setIsSwitchOn(previousState => !previousState);
+    setIsDate(!isSwitchOn); // Switch between daily and hourly forecast
   };
 
   return (
@@ -34,34 +60,88 @@ function Home() {
       </View>
       <View style={styles.searchContainer}>
         <TextInput
-        style={styles.input}
-        placeholder="Enter your location"
-        placeholderTextColor="#AAA"
-        value={query}
-        onChangeText={(text) => setQuery(text)}
-        onSubmitEditing={handleSearch}
+          style={styles.input}
+          placeholder="Enter your location"
+          placeholderTextColor="#AAA"
+          value={query}
+          onChangeText={(text) => setQuery(text)}
+          onSubmitEditing={handleSearch}
         />
-
         <Pressable
-        style={({ pressed }) => [
+          style={({ pressed }) => [
             styles.buttons,
             styles.buttonPrimary,
-            pressed && { backgroundColor: "#FF7A30" }, // Slightly darker on press
-        ]}
-        onPress={handleSearch}
+            pressed && { backgroundColor: "#FF7A30" },
+          ]}
+          onPress={handleSearch}
         >
-        <Text style={styles.buttonText}>Search</Text>
+          <Text style={styles.buttonText}>Search</Text>
         </Pressable>
-
       </View>
+
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchText}>Show Forecast for:</Text>
+        <Text style={styles.switchLabel}>{isSwitchOn ? "Hours" : "Days"}</Text>
+        <Animated.View
+          style={[
+            styles.switch,
+            {
+              transform: [
+                {
+                  translateX: animatedSwitch.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 50], // Adjust the switch movement
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Switch onValueChange={toggleSwitch} value={isSwitchOn} />
+        </Animated.View>
+      </View>
+
       <View style={styles.content}>
-        {status === "loading" && <ActivityIndicator size="large" color="#FDC185" />}
-        {status === "succeeded" && respond && (
-          <Text style={styles.weatherInfo}>
-            {`The weather in ${respond.location.name}, ${respond.location.country} is ${respond.current.condition.text} with a temperature of ${respond.current.temp_c}°C.`}
-          </Text>
-        )}
-        {status === "failed" && <Text style={styles.error}>{error?.message || "Something went wrong"}</Text>}
+        <View style={styles.heading}>
+          <View style={styles.location}>
+            <FontAwesome6 name="location-dot" color="#FF914D" size={32} />
+            <Text style={styles.locationName}>{response?.location?.name || query}</Text>
+          </View>
+          <View style={styles.current}>
+            <Text style={styles.today}>Today</Text>
+            <Text style={styles.time}>{response?.location?.localtime.split(" ")[1]}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", paddingVertical: 24 }}>
+          <View style={{ width: "75%" }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Feels Like</Text>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Text style={{ fontSize: 46, fontWeight: "bold", width: "100" }}>
+                {response?.current?.feelslike_c}
+              </Text>
+              <Text style={{ fontSize: 14, fontWeight: "bold" }}>C°</Text>
+            </View>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <Image
+              source={{ uri: `https:${response?.current?.condition?.icon}` }}
+              style={{ width: 100, height: 80 }}
+            />
+            <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
+          </View>
+        </View>
+
+        <FlatList
+          data={isSwitchOn ? response?.forecast?.forecastday[0]?.hour : response?.forecast?.forecastday}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={[styles.forecastItem, {flexDirection:'row'}]}>
+              <Text style={{width:'225' , fontWeight:'bold'}}>{item.day.avgtemp_c}°C</Text>
+              <Text>{item.date}</Text>
+            </View>
+          )}
+        />
       </View>
     </View>
   );
@@ -80,7 +160,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: "bold",
     color: "#333",
-    marginBottom:12
+    marginBottom: 12,
   },
   subtitle: {
     fontSize: 18,
@@ -92,7 +172,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 34,
     borderColor: "#E8DDD2",
-    marginVertical: 20,
+    marginVertical: 18,
   },
   input: {
     flex: 1,
@@ -102,8 +182,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 18,
   },
   weatherInfo: {
     fontSize: 16,
@@ -133,7 +214,57 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  heading: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  location: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  locationName: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  today: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  time: {},
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 20,
+  },
+  switchText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  switchLabel: {
+    fontSize: 16,
+    color: "#555",
+  },
+  switch: {
+    transform: [{ translateX: 0 }],
+    padding: 5,
+    backgroundColor: "#FF914D",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+  },
+  forecastItem: {
+    padding: 14,
+    backgroundColor:'#E8DDD2',
+    marginBottom:12,
+    borderRadius:18
+  },
+  forecastText: {
+    fontSize: 16,
+    color: "#333",
+  },
 });
-
 
 export default Home;
