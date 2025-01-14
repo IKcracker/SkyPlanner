@@ -8,10 +8,8 @@ function Layout() {
         <Stack.Screen name="index" options={{
           headerShown: false
         }} />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="auth" />
-        {/* <Stack.Screen name="login" />
-        <Stack.Screen name="register" /> */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }}/>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
         <Stack.Screen name="+not-found" />
       </Stack>
     </Provider>

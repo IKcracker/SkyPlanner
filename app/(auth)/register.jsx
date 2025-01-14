@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const router = useRouter();
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -15,45 +17,26 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await axios.post('https://skyplanner-api-1.onrender.com/users/register', { name, email, password });
+      await axios.post('https://skyplanner-api-1.onrender.com/api/users/register', { name, email, password });
       Alert.alert('Success', 'Registration successful');
-      navigation.navigate('login');
+      router.push('(auth)/login');
     } catch (error) {
-      Alert.alert('Error', error.response.data.msg || 'Something went wrong');
+      Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Name</Text>
-      <TextInput 
-        style={styles.input} 
-        value={name} 
-        onChangeText={setName} 
-      />
+      <TextInput style={styles.input} value={name} onChangeText={setName} />
       <Text style={styles.label}>Email</Text>
-      <TextInput 
-        style={styles.input} 
-        value={email} 
-        onChangeText={setEmail} 
-        keyboardType="email-address"
-      />
+      <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
       <Text style={styles.label}>Password</Text>
-      <TextInput 
-        style={styles.input} 
-        value={password} 
-        onChangeText={setPassword} 
-        secureTextEntry
-      />
+      <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
       <Text style={styles.label}>Confirm Password</Text>
-      <TextInput 
-        style={styles.input} 
-        value={confirmPassword} 
-        onChangeText={setConfirmPassword} 
-        secureTextEntry
-      />
+      <TextInput style={styles.input} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
       <Button title="Register" onPress={handleRegister} color="#FF914D" />
-      <Button title="Already have an account? Login" onPress={() => navigation.navigate('Login')} color="#FFE5D3" />
+      <Button title="Already have an account? Login" onPress={() => router.push('/auth/login')} color="#FFE5D3" />
     </View>
   );
 };

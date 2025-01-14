@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, ImageBackground, Animated } from "react-native";
+import { useRouter } from "expo-router";
 import background from "../assets/images/background.jpg";
 
 function Landing() {
+  const router = useRouter();
+
   // Animation values
   const fadeIn = useRef(new Animated.Value(0)).current;
   const slideIn = useRef(new Animated.Value(-50)).current;
@@ -35,7 +38,10 @@ function Landing() {
       </Animated.View>
 
       <Animated.View style={[styles.buttons, { opacity: fadeIn }]}>
-        <TouchableOpacity style={styles.buttonPrimary}>
+        <TouchableOpacity
+          style={styles.buttonPrimary}
+          onPress={() => router.push("(auth)/login")} 
+        >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonSecondary}>
@@ -49,10 +55,8 @@ function Landing() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f9ff",
     justifyContent: "center",
     padding: 20,
-    objectFit: "cover",
   },
   header: {
     marginBottom: 24,
@@ -61,18 +65,15 @@ const styles = StyleSheet.create({
     fontSize: 56,
     fontWeight: "bold",
     color: "#F7D0A9",
-    // textAlign: "center",
   },
   content: {
     alignItems: "center",
     marginBottom: 48,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 20,
   },
   description: {
     fontSize: 18,
     color: "#E8DDD2",
-    // textAlign: "center",
     paddingHorizontal: 10,
   },
   buttons: {
