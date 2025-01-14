@@ -5,11 +5,18 @@ function Layout() {
   return ( 
     <Provider store={store}>
     <Stack>
-      <Stack.Screen name="index" options={{
+      <Stack.Screen name="index" 
+      options={{
         headerShown:false
       }} />
-      <Stack.Screen name="(tabs)"  />
-      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="(tabs)" 
+      options={{
+        headerShown:false
+      }} />
+      <Stack.Screen name="+not-found" 
+      options={{
+        headerShown:false
+      }}/>
     </Stack>
     </Provider>
    );

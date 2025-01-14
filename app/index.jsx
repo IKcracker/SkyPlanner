@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, ImageBackground, Animated } from "react-native";
 import background from "../assets/images/background.jpg";
+import { router } from "expo-router";
 
 function Landing() {
   // Animation values
@@ -35,7 +36,7 @@ function Landing() {
       </Animated.View>
 
       <Animated.View style={[styles.buttons, { opacity: fadeIn }]}>
-        <TouchableOpacity style={styles.buttonPrimary}>
+        <TouchableOpacity style={styles.buttonPrimary} onPress={()=>router.replace('(tabs)/home')}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonSecondary}>

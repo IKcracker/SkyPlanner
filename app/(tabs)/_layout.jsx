@@ -1,11 +1,14 @@
 import { View } from "react-native";
-
-function Landing() {
+import { Tabs } from "expo-router";
+function Layout() {
   return ( 
-    <View>
-       
-    </View>
+     <Tabs>
+        <Tabs.Screen name="home" 
+        options={{
+        headerShown:false
+      }}/>
+     </Tabs>
    );
 }
 
-export default Landing;
+export default Layout;
