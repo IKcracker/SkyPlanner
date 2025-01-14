@@ -47,7 +47,7 @@ const LoginScreen = () => {
               Welcome Back
             </Animatable.Text>
             <View style={styles.inputGroup}>
-              <Ionicons name="mail-outline" size={20} color="#333" style={styles.icon} />
+              <Ionicons name="mail-outline" size={20} color="#fff" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 placeholder="Enter your email"
@@ -58,7 +58,7 @@ const LoginScreen = () => {
               />
             </View>
             <View style={styles.inputGroup}>
-              <Ionicons name="lock-closed-outline" size={20} color="#333" style={styles.icon} />
+              <Ionicons name="lock-closed-outline" size={20} color="#fff" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 placeholder="Enter your password"
