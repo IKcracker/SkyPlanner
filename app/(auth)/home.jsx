@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router'; 
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const router = useRouter(); 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        setUser({ name: 'John Doe' }); 
+        setUser({ name: 'John Doe' });
       } else {
-        navigation.replace('Login');
+        router.replace('/login'); 
       }
     };
 
     fetchUser();
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
-    navigation.replace('Login');
+    router.replace('/login'); 
   };
 
   return (

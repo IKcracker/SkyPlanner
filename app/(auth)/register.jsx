@@ -21,9 +21,17 @@ const RegisterScreen = () => {
       Alert.alert('Success', 'Registration successful');
       router.push('/login');
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
+      if (error.response && error.response.data.errors) {
+        const errorMessages = error.response.data.errors
+          .map((err) => err.msg)
+          .join('\n');
+        Alert.alert('Error', errorMessages);
+      } else {
+        Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
+      }
     }
   };
+
 
   return (
     <View style={styles.container}>
