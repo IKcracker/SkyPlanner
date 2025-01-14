@@ -79,28 +79,6 @@ function Home() {
         </Pressable>
       </View>
 
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchText}>Show Forecast for:</Text>
-        <Text style={styles.switchLabel}>{isSwitchOn ? "Hours" : "Days"}</Text>
-        <Animated.View
-          style={[
-            styles.switch,
-            {
-              transform: [
-                {
-                  translateX: animatedSwitch.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 50], // Adjust the switch movement
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <Switch onValueChange={toggleSwitch} value={isSwitchOn} />
-        </Animated.View>
-      </View>
-
       <View style={styles.content}>
         <View style={styles.heading}>
           <View style={styles.location}>
@@ -136,9 +114,17 @@ function Home() {
           data={isSwitchOn ? response?.forecast?.forecastday[0]?.hour : response?.forecast?.forecastday}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={[styles.forecastItem, {flexDirection:'row'}]}>
-              <Text style={{width:'225' , fontWeight:'bold'}}>{item.day.avgtemp_c}°C</Text>
+            <View style={[styles.forecastItem, {flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}]}>
+            {console.log(`https:${item?.day?.condition?.icon}` )}
+                <View style={{width:'70%'}}>
+                    <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45}/>
+                    <Text>{item?.day?.condition?.text}</Text>
+                    
+                </View>
+              <View style={{justifyContent:'space-between'}}>
               <Text>{item.date}</Text>
+              <Text style={{width:'225' , fontWeight:'bold'}}>{item?.day?.avgtemp_c}°C</Text> 
+              </View>
             </View>
           )}
         />
