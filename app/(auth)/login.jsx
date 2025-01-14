@@ -14,7 +14,7 @@ const LoginScreen = () => {
       const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
       await AsyncStorage.setItem('token', response.data.token);
       Alert.alert('Success', 'Logged in successfully');
-      router.replace('(auth)/home'); 
+      router.replace('/home'); 
     } catch (error) {
       Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
     }
@@ -37,7 +37,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} color="#FF914D" />
-      <Button title="Don't have an account? Register" onPress={() => router.push('(auth)/register')} color="#FFE5D3" />
+      <Button title="Don't have an account? Register" onPress={() => router.push('/register')} color="#FFE5D3" />
     </View>
   );
 };

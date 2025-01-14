@@ -19,7 +19,7 @@ const RegisterScreen = () => {
     try {
       await axios.post('https://skyplanner-api-1.onrender.com/api/users/register', { name, email, password });
       Alert.alert('Success', 'Registration successful');
-      router.push('(auth)/login');
+      router.push('/login');
     } catch (error) {
       Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
     }
@@ -36,7 +36,7 @@ const RegisterScreen = () => {
       <Text style={styles.label}>Confirm Password</Text>
       <TextInput style={styles.input} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
       <Button title="Register" onPress={handleRegister} color="#FF914D" />
-      <Button title="Already have an account? Login" onPress={() => router.push('/auth/login')} color="#FFE5D3" />
+      <Button title="Already have an account? Login" onPress={() => router.push('/login')} color="#FFE5D3" />
     </View>
   );
 };
