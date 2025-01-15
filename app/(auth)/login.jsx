@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert, ImageBackground, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Pressable } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { View, TextInput, Text, StyleSheet, Alert, ImageBackground, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Animatable from 'react-native-animatable';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
 import background from "../../assets/images/background.jpg";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -15,22 +16,38 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'All fields are required.');
-      return;
+        Alert.alert('Error', 'All fields are required.');
+        return;
     }
 
     setLoading(true);
+
     try {
-      const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
-      await AsyncStorage.setItem('token', response.data.token);
-      Alert.alert('Success', 'Logged in successfully');
-      router.replace('(tabs)/home');
+        const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
+        const { token } = response.data;
+
+        if (token) {
+            await AsyncStorage.setItem('token', token);
+
+            const userResponse = await axios.get('https://skyplanner-api-1.onrender.com/api/users/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const userName = userResponse.data.name;
+            await AsyncStorage.setItem('userName', userName);
+
+            Alert.alert('Success', 'Logged in successfully');
+            router.replace('(tabs)/home');
+        }
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
+        console.error('Login error:', error);
+        Alert.alert('Error', error.response?.data?.msg || error.message || 'Something went wrong');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
+  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -71,9 +88,6 @@ const LoginScreen = () => {
             <Animatable.View animation="fadeInUp" duration={1500}>
               <Pressable style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
-              </Pressable>
-              <Pressable style={[styles.button, styles.loginButton]} onPress={() => router.push('/register')}>
-                <Text style={[styles.buttonText, { color: '#FF914D' }]}>Create New Account</Text>
               </Pressable>
             </Animatable.View>
           </ScrollView>
@@ -133,11 +147,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
   },
-  loginButton: {
-    backgroundColor: 'transparent',
-    borderColor: '#FF914D',
-    borderWidth: 2,
-  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -145,7 +154,6 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     position: 'absolute',
-    flex: 1,
     top: 0,
     left: 0,
     right: 0,
@@ -153,11 +161,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10,
   },
   loadingText: {
-    marginTop: 8,
-    color: '#fff',
+    color: '#FF914D',
+    fontSize: 16,
+    marginTop: 10,
   },
 });
 
