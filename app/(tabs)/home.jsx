@@ -26,8 +26,6 @@ function Home() {
 
   const router = useRouter();
 
-  useEffect(() => {
-
   const [user , setUser] = useState('')
  useEffect(() => {
 
@@ -238,6 +236,7 @@ function Home() {
     </View>
      );
     }
+
 const styles = StyleSheet.create({
       container: {
         padding: 20,
