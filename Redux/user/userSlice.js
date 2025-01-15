@@ -14,7 +14,7 @@ const getToken = () => {
   return localStorage.getItem("token");
 };
 
-const login = createAsyncThunk(
+export const login = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
     try {
@@ -33,7 +33,7 @@ const login = createAsyncThunk(
   }
 );
 
-const register = createAsyncThunk(
+export const register = createAsyncThunk(
   "user/register",
   async (data, { rejectWithValue }) => {
     try {
@@ -52,7 +52,7 @@ const register = createAsyncThunk(
   }
 );
 
-const getUser = createAsyncThunk(
+export const getUser = createAsyncThunk(
   "user/getUser",
   async (_, { rejectWithValue }) => {
     try {
@@ -73,7 +73,7 @@ const getUser = createAsyncThunk(
     }
   }
 );
-const addFavorates = createAsyncThunk(
+export const addFavorates = createAsyncThunk(
   "user/addFavorates",
   async (data, { rejectWithValue }) => {
     try {

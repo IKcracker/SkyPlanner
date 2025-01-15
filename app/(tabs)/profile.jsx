@@ -8,7 +8,7 @@ function Profile() {
   const { response, status, error } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(g);
+    dispatch(get);
   }, [dispatch]);
 
   if (status === "loading") {
