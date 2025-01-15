@@ -5,6 +5,7 @@ const initial = {
   response: null,
   error: null,
   status: "idle",
+  searchedLocation: "",
 };
 
 export const getCurrentWeather = createAsyncThunk(
@@ -76,6 +77,10 @@ const weatherSlice = createSlice({
       state.response = null;
       state.error = null;
       state.status = "idle";
+      state.searchedLocation = ""; 
+    },
+    setSearchedLocation: (state, action) => {
+      state.searchedLocation = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -129,5 +134,5 @@ const weatherSlice = createSlice({
 });
 
 
-export const { restartState } = weatherSlice.actions;
+export const { restartState, setSearchedLocation  } = weatherSlice.actions;
 export default weatherSlice.reducer;
