@@ -6,37 +6,53 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
+
 import { useRouter } from 'expo-router';
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addFavorates, getUser, removeFavorates } from "../../Redux/user/userSlice";
+import { getActions } from "../../Redux/activities/activities";
+
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
-  const userName = useSelector((state) => state.user.userName);
+  const USER = useSelector(state => state.user)
+  const Activities = useSelector(state => state.activities)
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
   const [favorite, setFavorite] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
+
+  const [user , setUser] = useState('')
+ useEffect(() => {
+
     dispatch(restartState());
   }, []);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(getForecastDays(query));
+      dispatch(getUser());
+      dispatch(getActions())
     }
   }, [status]);
 
   useEffect(() => {
-    if (status === "failed") {
-      console.error(error?.message || "Error fetching weather data");
-    } else if (status === "succeeded") {
-      console.log(response);
-    } else {
-      return;
+    if (status === "failed" || USER.status === 'failed') {
+      console.log(error || USER.error);
     }
-  }, [status]);
+  }, [status, USER.status]);
+
+  useEffect(() => {
+    if (USER.status === 'succeeded') {
+      setUser(USER?.response?.name || 'User');
+    }
+  }, [USER.status]);
 
   useEffect(() => {
     Animated.timing(animatedSwitch, {
@@ -54,7 +70,21 @@ function Home() {
     }
   };
 
-  if (status === "loading") {
+  const handleAddFavorite = () => {
+    if(!favorite)
+    {
+      if (response?.location) {
+      const locationName = response.location.name;
+      const id = USER?.response?._id;
+      const data = { locationName, id };
+      dispatch(addFavorates(data));
+      setFavorite(state => !state);
+    }
+    }
+  
+  };
+
+  if (status === "loading" && USER.status === 'loading') {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF914D" />
@@ -63,18 +93,15 @@ function Home() {
         </Animatable.Text>
       </View>
     );
-  } else if (status === "fail") {
-    return (
-      <Animatable.View>
-        <Text>{console.log(error, response)}</Text>
-      </Animatable.View>
-    );
   }
+
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hi, {userName || 'User'}</Text>
+
+      <Text style={styles.greeting}>Hi, {user || 'User'}</Text>
+
         <Text style={styles.subtitle}>Let's start your vacation!</Text>
       </View>
       <View style={styles.searchContainer}>
@@ -128,11 +155,14 @@ function Home() {
             <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
           </Animatable.View>
         </View>
-        <Animatable.View style={{ flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12 }}>
-          <Animatable.Text style={{ fontSize: 16 }}>Save to favorite</Animatable.Text>
-          <Pressable style={{ paddingRight: 6 }} onPress={() => setFavorite(state => !state)}>
-            <FontAwesome6 name={favorite ? 'heart-circle-check' : 'heart'} size={32} color='#FF914D' />
-          </Pressable>
+
+        <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center', paddingVertical:12}}>
+            <Animatable.Text style={{fontSize:16}}>Save to favorite</Animatable.Text>
+            <Pressable style={{paddingRight:6}} onPress={handleAddFavorite}>
+            <FontAwesome6 name={favorite? 'heart-circle-check':'heart' }size={32} color='#FF914D' />
+            </Pressable>
+            
+
         </Animatable.View>
         <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
           <Pressable

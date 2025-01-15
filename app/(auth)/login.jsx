@@ -7,7 +7,7 @@ import axios from 'axios';
 import background from "../../assets/images/background.jpg";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
-
+import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -26,10 +26,16 @@ const LoginScreen = () => {
     try {
         const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
         const { token } = response.data;
-
+        
         if (token) {
-            await AsyncStorage.setItem('token', token);
+            try{
+              await SecureStore.setItemAsync('token', token);
+            }
+            catch(error){
+               console.log('error',error)
+            }
 
+            
             const userResponse = await axios.get('https://skyplanner-api-1.onrender.com/api/users/profile', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });

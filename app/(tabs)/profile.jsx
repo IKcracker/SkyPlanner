@@ -1,16 +1,17 @@
 import { useEffect } from "react";
-import { Text, View, StyleSheet, ActivityIndicator, FlatList } from "react-native";
+import { Text, View, StyleSheet, ActivityIndicator, FlatList, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-  
+import { getUser } from "../../Redux/user/userSlice";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 function Profile() {
   const dispatch = useDispatch();
   const { response, status, error } = useSelector((state) => state.user);
 
+  // Fetch user data once when the component mounts
   useEffect(() => {
-    dispatch(get);
+    dispatch(getUser());
   }, [dispatch]);
-
   if (status === "loading") {
     return (
       <View style={styles.loadingContainer}>
@@ -23,7 +24,7 @@ function Profile() {
   if (status === "failed") {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error?.message || "An error occurred"}</Text>
       </View>
     );
   }
@@ -31,15 +32,24 @@ function Profile() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Profile</Text>
-      {user ? (
+      {response ? (
         <View style={styles.profileContainer}>
-          <Text style={styles.userName}>Name: {user.name}</Text>
-          <Text style={styles.userEmail}>Email: {user.email}</Text>
+          <Text style={styles.userName}>Name: {response?.name}</Text>
+          <Text style={styles.userEmail}>Email: {response?.email}</Text>
           <Text style={styles.userFavorites}>Favorites:</Text>
+         
           <FlatList
-            data={user.favorites}
-            renderItem={({ item }) => <Text style={styles.favoriteItem}>{item.name}</Text>}
-            keyExtractor={(item) => item.id.toString()}
+            data={response?.favourites || []} 
+            renderItem={({ item }) => (
+              <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+              <Text style={styles.favoriteItem}>{item?.locationName || "No name"}</Text>
+              <Pressable style={{size: 24, color: "red"}} onPress={() => console.log("Delete")}>
+                  <FontAwesome6 name="trash" size={24} color="red" />
+              </Pressable>
+              
+              </View> 
+            )}
+            keyExtractor={(item) => item?.id?.toString() || item?.name || "key"} 
           />
         </View>
       ) : (
