@@ -63,7 +63,6 @@ export const getUser = createAsyncThunk(
         }
       );
       return response.data;
-      
     } catch (error) {
       if (error.response) {
         return rejectWithValue(error.response.data);
@@ -73,6 +72,7 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+
 export const addFavorates = createAsyncThunk(
   "user/addFavorite",
   async (data, { rejectWithValue }) => {
@@ -95,6 +95,30 @@ export const addFavorates = createAsyncThunk(
     }
   }
 );
+
+export const removeFavorates = createAsyncThunk(
+  "user/removeFavorite",
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      const response = await axios.delete(
+        "https://skyplanner-api-1.onrender.com/api/users/favorites/" + id,
+        {
+        
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue({ message: "Something went wrong" });
+      }
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: initial,
@@ -102,6 +126,11 @@ const userSlice = createSlice({
     logout: (state) => {
       localStorage.removeItem("token");
       return initial;
+    },
+    restartState: (state) => {
+      state.response = null;
+      state.error = null;
+      state.status = "idle";
     },
   },
   extraReducers: (builder) => {
@@ -152,8 +181,19 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.status = "failed";
       })
+      .addCase(removeFavorates.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(removeFavorates.fulfilled, (state, action) => {
+        state.response = action.payload;
+        state.status = "succeeded";
+      })
+      .addCase(removeFavorates.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
+      });
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, restartState } = userSlice.actions;
 export default userSlice.reducer;

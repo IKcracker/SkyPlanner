@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addFavorates, getUser } from "../../Redux/user/userSlice";
+import { addFavorates, getUser, removeFavorates } from "../../Redux/user/userSlice";
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
@@ -19,28 +19,29 @@ function Home() {
   const animatedSwitch = new Animated.Value(0);
   const [favorite, setFavorite] = useState(false);
   const [user , setUser] = useState('')
-  useEffect(() => {
+ useEffect(() => {
     dispatch(restartState());
   }, []);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(getForecastDays(query));
-      dispatch(getUser())
+      dispatch(getUser());
     }
   }, [status]);
 
   useEffect(() => {
-    if (status === "failed") {
-      return <view><Text>{error?.message || "Error fetching weather data"}</Text></view>
-    }     
-    if(USER.status === 'succeeded')
-    {
-      console.log(USER)
-      setUser(USER?.response?.name)
+    if (status === "failed" || USER.status === 'failed') {
+      console.log(error || USER.error);
     }
-  }, [status]);
- 
+  }, [status, USER.status]);
+
+  useEffect(() => {
+    if (USER.status === 'succeeded') {
+      setUser(USER?.response?.name || 'User');
+    }
+  }, [USER.status]);
+
   useEffect(() => {
     Animated.timing(animatedSwitch, {
       toValue: isSwitchOn ? 1 : 0,
@@ -55,6 +56,20 @@ function Home() {
     }
   };
 
+  const handleAddFavorite = () => {
+    if(!favorite)
+    {
+      if (response?.location) {
+      const locationName = response.location.name;
+      const id = USER?.response?._id;
+      const data = { locationName, id };
+      dispatch(addFavorates(data));
+      setFavorite(state => !state);
+    }
+    }
+  
+  };
+
   if (status === "loading" && USER.status === 'loading') {
     return (
       <View style={styles.loadingContainer}>
@@ -64,18 +79,8 @@ function Home() {
         </Animatable.Text>
       </View>
     );
-  } else if (status === "fail" && USER.status === 'fails') {
-    return (
-      <Animatable.View>
-        <Text>{console.log(error || USER.error)}</Text>
-      </Animatable.View>
-    );
   }
 
-  const handleAddFavorite = () => {
-     dispatch(addFavorates(response?.location?.name));
-     setFavorite(state => !state); 
-  };
 
   return (
     <View style={styles.container}>
