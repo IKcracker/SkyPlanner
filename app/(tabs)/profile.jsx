@@ -1,16 +1,21 @@
 import { useEffect } from "react";
 import { Text, View, StyleSheet, ActivityIndicator, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../../Redux/user/userSlice";
+import { restartState } from "../../Redux/weather/weather";
   
 
 function Profile() {
   const dispatch = useDispatch();
   const { response, status, error } = useSelector((state) => state.user);
 
+  useEffect(() => { 
+    dispatch(restartState());
+  },[])
   useEffect(() => {
-    dispatch(get);
+    dispatch(getUser());
   }, [dispatch]);
-
+  
   if (status === "loading") {
     return (
       <View style={styles.loadingContainer}>
@@ -19,32 +24,34 @@ function Profile() {
       </View>
     );
   }
-
-  if (status === "failed") {
+  else if (status === "failed") {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error?.message}</Text>
       </View>
     );
   }
-
+  if(state === 'succeeded')
+  {
+    console.log(response)
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Profile</Text>
-      {user ? (
+      {/* <Text style={styles.header}>Profile</Text>
+      {response ? (
         <View style={styles.profileContainer}>
-          <Text style={styles.userName}>Name: {user.name}</Text>
-          <Text style={styles.userEmail}>Email: {user.email}</Text>
+          <Text style={styles.userName}>Name: {response?.name}</Text>
+          <Text style={styles.userEmail}>Email: {response?.email}</Text>
           <Text style={styles.userFavorites}>Favorites:</Text>
           <FlatList
-            data={user.favorites}
+            data={response.favorites}
             renderItem={({ item }) => <Text style={styles.favoriteItem}>{item.name}</Text>}
             keyExtractor={(item) => item.id.toString()}
           />
         </View>
       ) : (
         <Text>No user data available.</Text>
-      )}
+      )} */}
     </View>
   );
 }

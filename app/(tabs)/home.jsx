@@ -28,12 +28,8 @@ function Home() {
 
   useEffect(() => {
     if (status === "failed") {
-      console.error(error?.message || "Error fetching weather data");
-    } else if (status === "succeeded") {
-      console.log(response);
-    } else {
-      return;
-    }
+      return <view><Text>{error?.message || "Error fetching weather data"}</Text></view>
+    }     
   }, [status]);
 
   useEffect(() => {
