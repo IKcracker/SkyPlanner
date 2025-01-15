@@ -54,11 +54,17 @@ function Home() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF914D" />
-        <Animatable.Text animation="fadeInUp" style={styles.weatherInfo}>
+        <Animatable.Text animation="fadeInUp" style={{fontSize:24,fontWeight:'bold'}}>
           Fetching weather data...
         </Animatable.Text>
       </View>
     );
+  }
+  else if(status === "fail")
+  {
+    <Animatable.View>
+        <Text>{console.log(error , response)}</Text>
+    </Animatable.View>
   }
 
   return (
@@ -101,7 +107,7 @@ function Home() {
         </View>
 
         <View style={{ flexDirection: "row",justifyContent:'space-between' ,  paddingTop: 6 }}>
-          <View style={{alignItems: "flex-start" }}>
+          <Animatable.View animation='fadeInLeft' duration={2000} style={{alignItems: "flex-start" }}>
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>Feels Like</Text>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
               <Text style={{ fontSize: 46, fontWeight: "bold", width: "100" }}>
@@ -109,16 +115,16 @@ function Home() {
               </Text>
               <Text style={{ fontSize: 14, fontWeight: "bold" }}>C°</Text>
             </View>
-          </View>
-          <View style={{ alignItems: "center" }}>
+          </Animatable.View>
+          <Animatable.View animation='fadeInRight' duration={2000} style={{ alignItems: "center" }}>
             <Image
               source={{ uri: `https:${response?.current?.condition?.icon}` }}
               style={{ width: 60, height: 60 }}
             />
             <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
-          </View>
+          </Animatable.View>
         </View>
-        <View style={[styles.switchContainer, { justifyContent: "space-between" }]}>
+        <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
         <Pressable
             onPress={() => setIsSwitchOn(false)}
             style={[styles.switch, !isSwitchOn && { backgroundColor: "#FF914D" }]}
@@ -141,14 +147,14 @@ function Home() {
             Activities
             </Animatable.Text>
         </Pressable>
-        </View>
+        </Animatable.View>
 
         {!isSwitchOn?<FlatList
           data={response?.forecast?.forecastday}
           style={{backgroundColor:'#F9FAFC', borderRadius:18, marginTop:12}}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={[styles.forecastItem, {flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}]}>
+            <Animatable.View animation='fadeInRight' duration={2000} style={[styles.forecastItem, {flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}]}>
                 <View style={{ alignItems: "flex-start" }}>
                     <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45}/>
                     <Text>{item?.day?.condition?.text}</Text>      
@@ -157,10 +163,11 @@ function Home() {
                     <Text>{item.date}</Text>
                     <Text style={{fontWeight:'bold'}}>{item?.day?.avgtemp_c}°C</Text> 
                 </View>
-            </View>
+            </Animatable.View>
           )}
         />:
-        <Animated.View
+        <Animatable.View
+        animation='fadeInLeft' duration={2000}
         style={{
             backgroundColor: "#F9FAFC",
             padding: 16,
@@ -168,6 +175,7 @@ function Home() {
             marginTop: 12,
             flex: 1,
         }}
+        
         >
         <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 12 }}>
             Recommended Activities based on the weather
@@ -186,7 +194,7 @@ function Home() {
             <Text style={styles.activityText}>Swim</Text>
             </View>
         </View>
-        </Animated.View>}
+        </Animatable.View>}
       </View>
     </View>
   );
@@ -197,6 +205,11 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 1,
     backgroundColor: "#F9FAFC",
+  },
+  loadingContainer:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center'
   },
   header: {
     marginBottom: 24,
