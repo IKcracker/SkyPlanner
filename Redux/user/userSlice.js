@@ -79,7 +79,7 @@ const addFavorates = createAsyncThunk(
     try {
       const token = getToken();
       const response = await axios.post(
-        "https://skyplanner-api-1.onrender.com/api/users/favorates",
+        "https://skyplanner-api-1.onrender.com/api/users/favorites",
         data,
         {
           headers: { Authorization: `Bearer ${token}` },
