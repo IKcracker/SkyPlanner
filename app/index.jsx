@@ -36,7 +36,7 @@ function Landing() {
       </Animated.View>
 
       <Animated.View style={[styles.buttons, { opacity: fadeIn }]}>
-        <TouchableOpacity style={styles.buttonPrimary} onPress={()=>router.replace('(tabs)/home')}>
+        <TouchableOpacity style={styles.buttonPrimary} onPress={()=>router.push("(auth)/login")}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonSecondary}>

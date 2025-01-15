@@ -24,7 +24,7 @@ const LoginScreen = () => {
       const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
       await AsyncStorage.setItem('token', response.data.token);
       Alert.alert('Success', 'Logged in successfully');
-      router.replace('/home');
+      router.replace('(tabs)/home');
     } catch (error) {
       Alert.alert('Error', error.response?.data?.msg || 'Something went wrong');
     } finally {
