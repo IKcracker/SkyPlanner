@@ -7,17 +7,20 @@ import * as Animatable from 'react-native-animatable';
 
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
-  const userName = useSelector((state) => state.user.userName);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
   const [favorite, setFavorite] = useState(false);
+  const [user , setUser] = useState('')
   useEffect(() => {
     dispatch(restartState());
+    const res = AsyncStorage.getItem('userName')
+    setUser(res)
   }, []);
 
   useEffect(() => {
@@ -66,7 +69,7 @@ function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-      <Text style={styles.greeting}>Hi, {userName || 'User'}</Text>
+      <Text style={styles.greeting}>Hi, {user || 'User'}</Text>
         <Text style={styles.subtitle}>Let's start your vacation!</Text>
       </View>
       <View style={styles.searchContainer}>

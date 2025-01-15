@@ -9,12 +9,9 @@ function Profile() {
   const dispatch = useDispatch();
   const { response, status, error } = useSelector((state) => state.user);
 
-  useEffect(() => { 
-    dispatch(restartState());
-  },[])
   useEffect(() => {
     dispatch(getUser());
-  }, [dispatch]);
+  }, []);
   
   if (status === "loading") {
     return (
@@ -31,27 +28,24 @@ function Profile() {
       </View>
     );
   }
-  if(state === 'succeeded')
-  {
-    console.log(response)
-  }
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.header}>Profile</Text>
+      <Text style={styles.header}>Profile</Text>
       {response ? (
         <View style={styles.profileContainer}>
           <Text style={styles.userName}>Name: {response?.name}</Text>
           <Text style={styles.userEmail}>Email: {response?.email}</Text>
           <Text style={styles.userFavorites}>Favorites:</Text>
           <FlatList
-            data={response.favorites}
+            data={response?.favorites}
             renderItem={({ item }) => <Text style={styles.favoriteItem}>{item.name}</Text>}
             keyExtractor={(item) => item.id.toString()}
           />
         </View>
       ) : (
         <Text>No user data available.</Text>
-      )} */}
+      )}
     </View>
   );
 }

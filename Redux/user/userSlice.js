@@ -1,5 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
 
 const initial = {
   response: null,
@@ -7,11 +9,8 @@ const initial = {
   status: "idle",
 };
 
-const saveToken = (token) => {
-  localStorage.setItem("token", token);
-};
 const getToken = () => {
-  return localStorage.getItem("token");
+  return SecureStore.getItem("token");
 };
 
 export const login = createAsyncThunk(
@@ -63,7 +62,6 @@ export const getUser = createAsyncThunk(
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response.data)
       return response.data;
       
     } catch (error) {
