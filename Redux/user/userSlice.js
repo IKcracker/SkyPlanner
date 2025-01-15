@@ -14,7 +14,7 @@ const getToken = () => {
   return localStorage.getItem("token");
 };
 
-export const login = createAsyncThunk(
+const login = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
     try {
@@ -33,7 +33,7 @@ export const login = createAsyncThunk(
   }
 );
 
-export const register = createAsyncThunk(
+const register = createAsyncThunk(
   "user/register",
   async (data, { rejectWithValue }) => {
     try {
@@ -52,7 +52,7 @@ export const register = createAsyncThunk(
   }
 );
 
-export const getUser = createAsyncThunk(
+const getUser = createAsyncThunk(
   "user/getUser",
   async (_, { rejectWithValue }) => {
     try {
@@ -73,28 +73,7 @@ export const getUser = createAsyncThunk(
     }
   }
 );
-export const addFavorates = createAsyncThunk(
-  "user/addFavorates",
-  async (data, { rejectWithValue }) => {
-    try {
-      const token = getToken();
-      const response = await axios.post(
-        "https://skyplanner-api-1.onrender.com/api/users/favorites",
-        data,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        return rejectWithValue(error.response.data);
-      } else {
-        return rejectWithValue({ message: "Something went wrong" });
-      }
-    }
-  }
-);
+
 const userSlice = createSlice({
   name: "user",
   initialState: initial,
@@ -140,18 +119,7 @@ const userSlice = createSlice({
       .addCase(getUser.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
-      })
-      .addCase(addFavorates.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(addFavorates.fulfilled, (state, action) => {
-        state.response = action.payload;
-        state.status = "succeeded";
-      })
-      .addCase(addFavorates.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = "failed";
-      })
+      });
   },
 });
 

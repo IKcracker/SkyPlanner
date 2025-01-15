@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getForecastDays, restartState } from "../../Redux/weather/weather";
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
-
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
 
