@@ -5,24 +5,33 @@ import MapView, { Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentWeather } from "../../Redux/weather/weather";
 
-const MapScreen = () => {
+const MapScreen = ({ route = {} }) => {  
   const [location, setLocation] = useState(null);
-  const [searchedLocation, setSearchedLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const { response } = useSelector((state) => state.weather);
   const dispatch = useDispatch();
+  const { params = {} } = route;  
+  const paramValue = params.paramName;
+
+  const [searchedLocation, setSearchedLocation] = useState(params.location || "");  // Initialize searchedLocation
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission to access location was denied");
-        return;
-      }
-      let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc.coords);
-    })();
-  }, []);
+    if (searchedLocation) {
+      setLoading(true);
+      dispatch(getCurrentWeather(searchedLocation));
+      setLoading(false);
+    } else {
+      (async () => {
+        let { status } = await Location.requestPermissionsAsync();
+        if (status !== "granted") {
+          alert("Permission to access location was denied");
+          return;
+        }
+        let loc = await Location.getCurrentPositionAsync({});
+        setLocation(loc.coords);
+      })();
+    }
+  }, [searchedLocation]);
 
   const handleSearchLocation = async () => {
     setLoading(true);
@@ -42,7 +51,7 @@ const MapScreen = () => {
         }}
         placeholder="Search for a location"
         value={searchedLocation}
-        onChangeText={setSearchedLocation}
+        onChangeText={(text) => setSearchedLocation(text)}
       />
       <Button title="Search" onPress={handleSearchLocation} />
       {loading ? (

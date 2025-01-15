@@ -7,7 +7,7 @@ import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
 
-function Home() {
+function Home({ navigation }) {  // Add navigation prop
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
   const userName = useSelector((state) => state.user.userName);
@@ -46,6 +46,7 @@ function Home() {
   const handleSearch = () => {
     if (query.trim()) {
       dispatch(getForecastDays(query));
+      navigation.navigate('MapScreen', { paramName: query });  // Use query instead of value
     }
   };
 
@@ -69,7 +70,7 @@ function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-      <Text style={styles.greeting}>Hi, {userName || 'User'}</Text>
+        <Text style={styles.greeting}>Hi, {userName || 'User'}</Text>
         <Text style={styles.subtitle}>Let's start your vacation!</Text>
       </View>
       <View style={styles.searchContainer}>
@@ -118,17 +119,16 @@ function Home() {
           <Animatable.View animation='fadeInRight' duration={2000} style={{ alignItems: "flex-end" }}>
             <Image
               source={{ uri: `https:${response?.current?.condition?.icon}` }}
-              style={{ width: 60, height: 60  , backgroundColor:'#F9FAFC'}}
+              style={{ width: 60, height: 60, backgroundColor: '#F9FAFC' }}
             />
             <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
           </Animatable.View>
         </View>
-        <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center', paddingVertical:12}}>
-            <Animatable.Text style={{fontSize:16}}>Save to favorite</Animatable.Text>
-            <Pressable style={{paddingRight:6}} onPress={()=> setFavorite(state => !state)}>
-            <FontAwesome6 name={favorite? 'heart-circle-check':'heart' }size={32} color='#FF914D' />
-            </Pressable>
-            
+        <Animatable.View style={{ flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12 }}>
+          <Animatable.Text style={{ fontSize: 16 }}>Save to favorite</Animatable.Text>
+          <Pressable style={{ paddingRight: 6 }} onPress={() => setFavorite(state => !state)}>
+            <FontAwesome6 name={favorite ? 'heart-circle-check' : 'heart'} size={32} color='#FF914D' />
+          </Pressable>
         </Animatable.View>
         <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
           <Pressable
@@ -160,7 +160,6 @@ function Home() {
           style={{ backgroundColor: '#F9FAFC', borderRadius: 18, marginTop: 12 }}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-
             <Animatable.View animation='fadeInRight' duration={2000} style={[styles.forecastItem, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
               <View style={{ alignItems: "flex-start" }}>
                 <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45} />
@@ -170,7 +169,6 @@ function Home() {
                 <Text>{item.date}</Text>
                 <Text style={{ fontWeight: 'bold' }}>{item?.day?.avgtemp_c}°C</Text>
               </View>
-
             </Animatable.View>
           )}
         /> :
@@ -201,7 +199,7 @@ function Home() {
                 <Text style={styles.activityText}>Swim</Text>
               </View>
             </View>
-          </Animatable.View>}
+            </Animatable.View>}
       </View>
     </View>
   );
@@ -245,8 +243,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  current:{
-    alignItems:'flex-end'
+  current: {
+    alignItems: 'flex-end'
   },
   content: {
     flex: 1,
