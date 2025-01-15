@@ -1,27 +1,28 @@
-import { createAsyncThunk , createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios"; // Ensure axios is imported
 
 const initial = {
-    response: null,
-    error: null,
-    status: "idle",
+  response: null,
+  error: null,
+  status: "idle",
 };
 
 export const getActions = createAsyncThunk(
-    "activities/getActivities",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await axios.get(
-                "https://skyplanner-api-1.onrender.com/api/activities"
-            );
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                return rejectWithValue(error.response.data);
-            } else {
-                return rejectWithValue({ message: "Something went wrong" });
-            }
-        }
+  "activities/getActivities",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        "https://skyplanner-api-1.onrender.com/api/activities"
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue({ message: "Something went wrong" });
+      }
     }
+  }
 );
 
 const activitiesSlice = createSlice({

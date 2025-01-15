@@ -91,6 +91,7 @@ function Home() {
       <Text style={styles.greeting}>Hi, {user || 'User'}</Text>
         <Text style={styles.subtitle}>Let's start your vacation!</Text>
       </View>
+      
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
@@ -111,8 +112,32 @@ function Home() {
           <Text style={styles.buttonText}>Search</Text>
         </Pressable>
       </View>
+        <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
+          <Pressable
+            onPress={() => setIsSwitchOn(false)}
+            style={[styles.switch, !isSwitchOn && { backgroundColor: "#FF914D" }]}
+          >
+            <Animatable.Text
+              animation="fadeIn"
+              style={[styles.switchText, { textAlign: "center", color: !isSwitchOn ? "#fff" : "#333" }]}
+            >
+              Forecast
+            </Animatable.Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setIsSwitchOn(true)}
+            style={[styles.switch, isSwitchOn && { backgroundColor: "#FF914D" }]}
+          >
+            <Animatable.Text
+              animation="fadeIn"
+              style={[styles.switchText, { textAlign: "center", color: isSwitchOn ? "#fff" : "#333" }]}
+            >
+              Activities
+            </Animatable.Text>
+          </Pressable>
+        </Animatable.View>
 
-      <View style={styles.content}>
+     {!isSwitchOn ? <View style={styles.content}>
         <View style={styles.heading}>
           <View style={styles.location}>
             <FontAwesome6 name="location-dot" color="#FF914D" size={32} />
@@ -149,32 +174,8 @@ function Home() {
             </Pressable>
             
         </Animatable.View>
-        <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
-          <Pressable
-            onPress={() => setIsSwitchOn(false)}
-            style={[styles.switch, !isSwitchOn && { backgroundColor: "#FF914D" }]}
-          >
-            <Animatable.Text
-              animation="fadeIn"
-              style={[styles.switchText, { textAlign: "center", color: !isSwitchOn ? "#fff" : "#333" }]}
-            >
-              Forecast
-            </Animatable.Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setIsSwitchOn(true)}
-            style={[styles.switch, isSwitchOn && { backgroundColor: "#FF914D" }]}
-          >
-            <Animatable.Text
-              animation="fadeIn"
-              style={[styles.switchText, { textAlign: "center", color: isSwitchOn ? "#fff" : "#333" }]}
-            >
-              Activities
-            </Animatable.Text>
-          </Pressable>
-        </Animatable.View>
 
-        {!isSwitchOn ? <FlatList
+        <FlatList
           data={response?.forecast?.forecastday}
           style={{ backgroundColor: '#F9FAFC', borderRadius: 18, marginTop: 12 }}
           keyExtractor={(item, index) => index.toString()}
@@ -192,36 +193,44 @@ function Home() {
 
             </Animatable.View>
           )}
-        /> :
-          <Animatable.View
-            animation='fadeInLeft' duration={2000}
-            style={{
-              backgroundColor: "#F9FAFC",
-              padding: 16,
-              borderRadius: 18,
-              marginTop: 12,
-              flex: 1,
-            }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 12 }}>
-              Recommended Activities based on the weather
-            </Text>
-            <View>
-              <View style={styles.activityItem}>
-                <Icon name="water-outline" size={24} style={{ width: '24' }} color="#FF914D" />
-                <Text style={styles.activityText}>Drink Lots of Water</Text>
-              </View>
-              <View style={styles.activityItem}>
-                <Icon name="leaf-outline" size={24} style={{ width: '24' }} color="#FF914D" />
-                <Text style={styles.activityText}>Stay Hydrated</Text>
-              </View>
-              <View style={styles.activityItem}>
-                <Icon name="swim-outline" size={24} style={{ width: '24' }} color="#FF914D" />
-                <Text style={styles.activityText}>Swim</Text>
-              </View>
-            </View>
-          </Animatable.View>}
+        /> 
       </View>
+      :
+         <Animatable.View
+  animation="fadeInLeft"
+  duration={2000}
+  style={{
+    backgroundColor: "#F9FAFC",
+    padding: 16,
+    borderRadius: 18,
+    marginTop: 12,
+    flex: 1,
+  }}
+>
+  <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 12 }}>
+    Recommended Activities based on the weather
+  </Text>
+
+  {Activities?.response?.activities.length === 0 ? (
+    <Animatable.View>
+      <Text>Sorry, we are still working on more recommendations. Try another location.</Text>
+    </Animatable.View>
+  ) : (
+    <FlatList
+      data={Activities?.response.activities || []}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) =>
+        response?.current?.condition?.text.includes(item.condition) ? (
+          <Animatable.View animation="fadeIn" duration={2000} style={styles.activityItem}>
+            <FontAwesome6 name="check-circle" size={24} color="#FF914D" />
+            <Text style={styles.activityText}>{item.activity}</Text>
+          </Animatable.View>
+        ) : null // Don't render anything if condition doesn't match
+      }
+    />
+  )}
+</Animatable.View>
+}
     </View>
   );
 }
