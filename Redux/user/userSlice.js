@@ -53,7 +53,7 @@ export const register = createAsyncThunk(
 );
 
 export const getUser = createAsyncThunk(
-  "user/getUser",
+  "user/getUserProfile",
   async (_, { rejectWithValue }) => {
     try {
       const token = getToken();
@@ -76,7 +76,7 @@ export const getUser = createAsyncThunk(
   }
 );
 export const addFavorates = createAsyncThunk(
-  "user/addFavorates",
+  "user/addFavorite",
   async (data, { rejectWithValue }) => {
     try {
       const token = getToken();
