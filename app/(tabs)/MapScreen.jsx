@@ -5,15 +5,11 @@ import MapView, { Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentWeather } from "../../Redux/weather/weather";
 
-const MapScreen = ({ route = {} }) => {  
+const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { response } = useSelector((state) => state.weather);
+  const { response, searchedLocation } = useSelector((state) => state.weather);
   const dispatch = useDispatch();
-  const { params = {} } = route;  
-  const paramValue = params.paramName;
-
-  const [searchedLocation, setSearchedLocation] = useState(params.location || "");
 
   useEffect(() => {
     if (searchedLocation) {

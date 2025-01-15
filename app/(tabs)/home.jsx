@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, ActivityIndicator, Pressable, Image, FlatList, Animated } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { getForecastDays, restartState } from "../../Redux/weather/weather";
+import { getForecastDays, restartState, setSearchedLocation  } from "../../Redux/weather/weather";
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
@@ -46,10 +46,11 @@ function Home() {
     }).start();
   }, [isSwitchOn]);
 
+  
   const handleSearch = () => {
     if (query.trim()) {
       dispatch(getForecastDays(query));
-      router.push({ pathname: 'MapScreen', params: { paramName: query } });  
+      dispatch(setSearchedLocation(query)); 
     }
   };
 
