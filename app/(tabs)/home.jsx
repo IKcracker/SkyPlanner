@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator, Pressable, Image, FlatList, Switch, Animated } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentWeather, getForecastDays, getForecastWeather, restartState } from "../../Redux/weather/weather";
+import { getForecastDays, restartState } from "../../Redux/weather/weather";
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
-import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons"; 
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
-  const [isDate, setIsDate] = useState(false); 
+  const [favorite , setFavorite] = useState(false)
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
     const animatedSwitch = new Animated.Value(0);
@@ -124,6 +123,13 @@ function Home() {
             <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
           </Animatable.View>
         </View>
+        <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center'}}>
+            <Animatable.Text style={{fontSize:16}}>Save to favorite</Animatable.Text>
+            <Pressable style={{paddingRight:6}} onPress={()=> setFavorite(state => !state)}>
+            <FontAwesome6 name={favorite? 'heart-circle-check':'heart' }size={32} color='#FF914D' />
+            </Pressable>
+            
+        </Animatable.View>
         <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
         <Pressable
             onPress={() => setIsSwitchOn(false)}
@@ -159,7 +165,7 @@ function Home() {
                     <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45}/>
                     <Text>{item?.day?.condition?.text}</Text>      
                 </View>
-                <View style={{jbackgroundColor:'red', alignItems: "flex-end"}}>
+                <View style={{ alignItems: "flex-end"}}>
                     <Text>{item.date}</Text>
                     <Text style={{fontWeight:'bold'}}>{item?.day?.avgtemp_c}°C</Text> 
                 </View>
@@ -276,7 +282,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "100%",
   },
   location: {
