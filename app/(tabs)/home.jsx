@@ -218,13 +218,13 @@ function Home() {
     </Animatable.View>
   ) : (
     <FlatList
-      data={Activities?.response.activities || []}
+      data={Activities?.response?.activities || []}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) =>
         response?.current?.condition?.text.includes(item.condition) ? (
           <Animatable.View animation="fadeIn" duration={2000} style={styles.activityItem}>
             <FontAwesome6 name="check-circle" size={24} color="#FF914D" />
-            <Text style={styles.activityText}>{item.activity}</Text>
+            <Text style={styles.activityText}>{item?.activity}</Text>
           </Animatable.View>
         ) : null // Don't render anything if condition doesn't match
       }
