@@ -1,94 +1,127 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const getAuthToken = async () => {
-  const token = await AsyncStorage.getItem('token');
-  return token ? `Bearer ${token}` : null;
+const initial = {
+  response: null,
+  error: null,
+  status: "idle",
 };
 
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async ({ email, password }, { rejectWithValue }) => {
+const saveToken = (token) => {
+  localStorage.setItem("token", token);
+};
+const getToken = () => {
+  return localStorage.getItem("token");
+};
+
+const login = createAsyncThunk(
+  "user/login",
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://skyplanner-api-1.onrender.com/api/users/login', { email, password });
-      const { token, user } = response.data;
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('userName', user.name);
-      return user;
+      const response = await axios.post(
+        "https://skyplanner-api-1.onrender.com/api/users/login",
+        data
+      );
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.msg || 'Something went wrong');
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue({ message: "Something went wrong" });
+      }
     }
   }
 );
 
-export const fetchUserProfile = createAsyncThunk(
-  'user/fetchUserProfile',
-  async (_, { rejectWithValue }) => {
+const register = createAsyncThunk(
+  "user/register",
+  async (data, { rejectWithValue }) => {
     try {
-      const token = await getAuthToken();
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      const response = await axios.get('https://skyplanner-api-1.onrender.com/api/users/profile', {
-        headers: {
-          Authorization: token,
-        },
-      });
-
+      const response = await axios.post(
+        "https://skyplanner-api-1.onrender.com/api/users/register",
+        data
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching user profile:', error.response?.data || error.message);
-      return rejectWithValue(error.response?.data || 'Something went wrong');
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue({ message: "Something went wrong" });
+      }
+    }
+  }
+);
+
+const getUser = createAsyncThunk(
+  "user/getUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      const response = await axios.get(
+        "https://skyplanner-api-1.onrender.com/api/users/profile",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue({ message: "Something went wrong" });
+      }
     }
   }
 );
 
 const userSlice = createSlice({
-  name: 'user',
-  initialState: {
-    user: null,
-    userName: null,  
-    status: 'idle',
-    error: null,
-  },
+  name: "user",
+  initialState: initial,
   reducers: {
     logout: (state) => {
-      state.user = null;
-      state.userName = null;  
-      AsyncStorage.removeItem('token');
-      AsyncStorage.removeItem('userName');
+      localStorage.removeItem("token");
+      return initial;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
-        state.status = 'loading';
+      .addCase(login.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
-        state.userName = action.payload.name;  
+      .addCase(login.fulfilled, (state, action) => {
+        state.response = action.payload;
+        state.status = "succeeded";
+        saveToken(action.payload.token);
       })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = 'failed';
+      .addCase(login.rejected, (state, action) => {
         state.error = action.payload;
+        state.status = "failed";
       })
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.status = 'loading';
+      .addCase(register.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
+      .addCase(register.fulfilled, (state, action) => {
+        state.response = action.payload;
+        state.status = "succeeded";
+        saveToken(action.payload.token);
       })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
-        state.status = 'failed';
+      .addCase(register.rejected, (state, action) => {
         state.error = action.payload;
+        state.status = "failed";
+      })
+      .addCase(getUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.response = action.payload;
+        state.status = "succeeded";
+      })
+      .addCase(getUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
       });
   },
 });
 
 export const { logout } = userSlice.actions;
-
 export default userSlice.reducer;

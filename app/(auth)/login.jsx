@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Alert, ImageBackground, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Animatable from 'react-native-animatable';
@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import background from "../../assets/images/background.jpg";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const LoginScreen = () => {
@@ -47,7 +48,6 @@ const LoginScreen = () => {
     }
 };
 
-  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

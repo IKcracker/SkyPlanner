@@ -12,12 +12,10 @@ function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
   const userName = useSelector((state) => state.user.userName);
-  const [isDate, setIsDate] = useState(false);
-
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
-
+  const [favorite, setFavorite] = useState(false);
   useEffect(() => {
     dispatch(restartState());
   }, []);
