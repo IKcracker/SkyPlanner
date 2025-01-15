@@ -12,7 +12,9 @@ function Profile() {
   useEffect(() => {
     dispatch(getUser());
   }, []);
-  
+  useEffect(()=>{
+    dispatch(getUser());
+  },[status])
   if (status === "loading") {
     return (
       <View style={styles.loadingContainer}>

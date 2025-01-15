@@ -8,10 +8,12 @@ import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addFavorates, getUser } from "../../Redux/user/userSlice";
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
+  const USER = useSelector(state => state.user)
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
@@ -19,13 +21,12 @@ function Home() {
   const [user , setUser] = useState('')
   useEffect(() => {
     dispatch(restartState());
-    const res = AsyncStorage.getItem('userName')
-    setUser(res)
   }, []);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(getForecastDays(query));
+      dispatch(getUser())
     }
   }, [status]);
 
@@ -33,8 +34,13 @@ function Home() {
     if (status === "failed") {
       return <view><Text>{error?.message || "Error fetching weather data"}</Text></view>
     }     
+    if(USER.status === 'succeeded')
+    {
+      console.log(USER)
+      setUser(USER?.response?.name)
+    }
   }, [status]);
-
+ 
   useEffect(() => {
     Animated.timing(animatedSwitch, {
       toValue: isSwitchOn ? 1 : 0,
@@ -49,7 +55,7 @@ function Home() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" && USER.status === 'loading') {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF914D" />
@@ -58,13 +64,18 @@ function Home() {
         </Animatable.Text>
       </View>
     );
-  } else if (status === "fail") {
+  } else if (status === "fail" && USER.status === 'fails') {
     return (
       <Animatable.View>
-        <Text>{console.log(error, response)}</Text>
+        <Text>{console.log(error || USER.error)}</Text>
       </Animatable.View>
     );
   }
+
+  const handleAddFavorite = () => {
+     dispatch(addFavorates(response?.location?.name));
+     setFavorite(state => !state); 
+  };
 
   return (
     <View style={styles.container}>
@@ -125,7 +136,7 @@ function Home() {
         </View>
         <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center', paddingVertical:12}}>
             <Animatable.Text style={{fontSize:16}}>Save to favorite</Animatable.Text>
-            <Pressable style={{paddingRight:6}} onPress={()=> setFavorite(state => !state)}>
+            <Pressable style={{paddingRight:6}} onPress={handleAddFavorite}>
             <FontAwesome6 name={favorite? 'heart-circle-check':'heart' }size={32} color='#FF914D' />
             </Pressable>
             
