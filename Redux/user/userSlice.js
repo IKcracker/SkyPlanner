@@ -13,7 +13,7 @@ const getToken = () => {
   return SecureStore.getItem("token");
 };
 
-const login = createAsyncThunk(
+export const login = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
     try {
@@ -32,7 +32,7 @@ const login = createAsyncThunk(
   }
 );
 
-const register = createAsyncThunk(
+export const register = createAsyncThunk(
   "user/register",
   async (data, { rejectWithValue }) => {
     try {
@@ -53,7 +53,6 @@ const register = createAsyncThunk(
 
 export const getUser = createAsyncThunk(
   "user/getUserProfile",
-
   async (_, { rejectWithValue }) => {
     try {
       const token = getToken();
@@ -120,7 +119,6 @@ export const removeFavorates = createAsyncThunk(
   }
 );
 
-
 const userSlice = createSlice({
   name: "user",
   initialState: initial,
@@ -171,7 +169,6 @@ const userSlice = createSlice({
       .addCase(getUser.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
-
       })
       .addCase(addFavorates.pending, (state) => {
         state.status = "loading";
@@ -194,7 +191,6 @@ const userSlice = createSlice({
       .addCase(removeFavorates.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
-
       });
   },
 });
