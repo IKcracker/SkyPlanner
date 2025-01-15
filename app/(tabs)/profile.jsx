@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { Text, View, StyleSheet, ActivityIndicator, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserProfile } from "../../Redux/user/userSlice";  
+  
 
 function Profile() {
   const dispatch = useDispatch();
-  const { user, status, error } = useSelector((state) => state.user);
+  const { response, status, error } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
+    dispatch(g);
   }, [dispatch]);
 
   if (status === "loading") {
