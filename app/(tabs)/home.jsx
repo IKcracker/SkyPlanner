@@ -1,38 +1,40 @@
 import { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator, Pressable, Image, FlatList, Switch, Animated } from "react-native";
+import { Text, View, TextInput, StyleSheet, ActivityIndicator, Pressable, Image, FlatList, Animated } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { getForecastDays, restartState } from "../../Redux/weather/weather";
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
-import Icon from "react-native-vector-icons/Ionicons"; 
+
+import { FadeIn } from "react-native-reanimated";
+import Icon from "react-native-vector-icons/Ionicons";
+
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
-  const [favorite , setFavorite] = useState(false)
+  const userName = useSelector((state) => state.user.userName);
+  const [isDate, setIsDate] = useState(false);
+
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
-    const animatedSwitch = new Animated.Value(0);
+  const animatedSwitch = new Animated.Value(0);
+
   useEffect(() => {
     dispatch(restartState());
   }, []);
 
   useEffect(() => {
     if (status === "idle") {
-      
-        dispatch(getForecastDays(query)); 
-    
+      dispatch(getForecastDays(query));
     }
   }, [status]);
 
   useEffect(() => {
     if (status === "failed") {
       console.error(error?.message || "Error fetching weather data");
-    }
-    else if (status === "succeeded") {
+    } else if (status === "succeeded") {
       console.log(response);
-    }
-    else{
-        return
+    } else {
+      return;
     }
   }, [status]);
 
@@ -49,27 +51,28 @@ function Home() {
       dispatch(getForecastDays(query));
     }
   };
+
   if (status === "loading") {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF914D" />
-        <Animatable.Text animation="fadeInUp" style={{fontSize:24,fontWeight:'bold'}}>
+        <Animatable.Text animation="fadeInUp" style={{ fontSize: 24, fontWeight: 'bold' }}>
           Fetching weather data...
         </Animatable.Text>
       </View>
     );
-  }
-  else if(status === "fail")
-  {
-    <Animatable.View>
-        <Text>{console.log(error , response)}</Text>
-    </Animatable.View>
+  } else if (status === "fail") {
+    return (
+      <Animatable.View>
+        <Text>{console.log(error, response)}</Text>
+      </Animatable.View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hi, user</Text>
+      <Text style={styles.greeting}>Hi, {userName || 'User'}</Text>
         <Text style={styles.subtitle}>Let's start your vacation!</Text>
       </View>
       <View style={styles.searchContainer}>
@@ -105,8 +108,8 @@ function Home() {
           </View>
         </View>
 
-        <View style={{ flexDirection: "row",justifyContent:'space-between' ,  paddingTop: 6 }}>
-          <Animatable.View animation='fadeInLeft' duration={2000} style={{alignItems: "flex-start" }}>
+        <View style={{ flexDirection: "row", justifyContent: 'space-between', paddingTop: 6 }}>
+          <Animatable.View animation='fadeInLeft' duration={2000} style={{ alignItems: "flex-start" }}>
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>Feels Like</Text>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
               <Text style={{ fontSize: 46, fontWeight: "bold", width: "100" }}>
@@ -131,76 +134,77 @@ function Home() {
             
         </Animatable.View>
         <Animatable.View animation='fadeIn' delay={2000} duration={2000} style={[styles.switchContainer, { justifyContent: "space-between" }]}>
-        <Pressable
+          <Pressable
             onPress={() => setIsSwitchOn(false)}
             style={[styles.switch, !isSwitchOn && { backgroundColor: "#FF914D" }]}
-        >
+          >
             <Animatable.Text
-            animation="fadeIn"
-            style={[styles.switchText, { textAlign: "center", color: !isSwitchOn ? "#fff" : "#333" }]}
+              animation="fadeIn"
+              style={[styles.switchText, { textAlign: "center", color: !isSwitchOn ? "#fff" : "#333" }]}
             >
-            Forecast
+              Forecast
             </Animatable.Text>
-        </Pressable>
-        <Pressable
+          </Pressable>
+          <Pressable
             onPress={() => setIsSwitchOn(true)}
             style={[styles.switch, isSwitchOn && { backgroundColor: "#FF914D" }]}
-        >
+          >
             <Animatable.Text
-            animation="fadeIn"
-            style={[styles.switchText, { textAlign: "center", color: isSwitchOn ? "#fff" : "#333" }]}
+              animation="fadeIn"
+              style={[styles.switchText, { textAlign: "center", color: isSwitchOn ? "#fff" : "#333" }]}
             >
-            Activities
+              Activities
             </Animatable.Text>
-        </Pressable>
+          </Pressable>
         </Animatable.View>
 
-        {!isSwitchOn?<FlatList
+        {!isSwitchOn ? <FlatList
           data={response?.forecast?.forecastday}
-          style={{backgroundColor:'#F9FAFC', borderRadius:18, marginTop:12}}
+          style={{ backgroundColor: '#F9FAFC', borderRadius: 18, marginTop: 12 }}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <Animatable.View animation='fadeInRight' duration={2000} style={[styles.forecastItem, {flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}]}>
-                <View style={{ alignItems:'flex-start'}}>
-                    <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45}/>
-                    <Text>{item?.day?.condition?.text}</Text>      
-                </View>
-                <View style={{ alignItems: "flex-end"}}>
-                    <Text>{item.date}</Text>
-                    <Text style={{fontWeight:'bold'}}>{item?.day?.avgtemp_c}°C</Text> 
-                </View>
+
+            <Animatable.View animation='fadeInRight' duration={2000} style={[styles.forecastItem, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+              <View style={{ alignItems: "flex-start" }}>
+                <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45} />
+                <Text>{item?.day?.condition?.text}</Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text>{item.date}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{item?.day?.avgtemp_c}°C</Text>
+              </View>
+
             </Animatable.View>
           )}
-        />:
-        <Animatable.View
-        animation='fadeInLeft' duration={2000}
-        style={{
-            backgroundColor: "#F9FAFC",
-            padding: 16,
-            borderRadius: 18,
-            marginTop: 12,
-            flex: 1,
-        }}
-        
-        >
-        <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 12 }}>
-            Recommended Activities based on the weather
-        </Text>
-        <View>
-            <View style={styles.activityItem}>
-            <Icon name="water-outline" size={24} style={{width:'24'}} color="#FF914D" />
-            <Text style={styles.activityText}>Drink Lots of Water</Text>
+        /> :
+          <Animatable.View
+            animation='fadeInLeft' duration={2000}
+            style={{
+              backgroundColor: "#F9FAFC",
+              padding: 16,
+              borderRadius: 18,
+              marginTop: 12,
+              flex: 1,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 12 }}>
+              Recommended Activities based on the weather
+            </Text>
+            <View>
+              <View style={styles.activityItem}>
+                <Icon name="water-outline" size={24} style={{ width: '24' }} color="#FF914D" />
+                <Text style={styles.activityText}>Drink Lots of Water</Text>
+              </View>
+              <View style={styles.activityItem}>
+                <Icon name="leaf-outline" size={24} style={{ width: '24' }} color="#FF914D" />
+                <Text style={styles.activityText}>Stay Hydrated</Text>
+              </View>
+              <View style={styles.activityItem}>
+                <Icon name="swim-outline" size={24} style={{ width: '24' }} color="#FF914D" />
+                <Text style={styles.activityText}>Swim</Text>
+              </View>
             </View>
-            <View style={styles.activityItem}>
-            <Icon name="leaf-outline" size={24}  style={{width:'24'}} color="#FF914D" />
-            <Text style={styles.activityText}>Stay Hydrated</Text>
-            </View>
-            <View style={styles.activityItem}>
-            <Icon name="swim-outline" size={24}   style={{width:'24'}} color="#FF914D" />
-            <Text style={styles.activityText}>Swim</Text>
-            </View>
-        </View>
-        </Animatable.View>}
+          </Animatable.View>}
       </View>
     </View>
   );
@@ -212,10 +216,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFC",
   },
-  loadingContainer:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   header: {
     marginBottom: 24,
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
   location: {
     flexDirection: "row",
     alignItems: "center",
-    gap:6,
+    gap: 6,
   },
   locationName: {
     fontSize: 32,
@@ -309,7 +313,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FF914D",
     borderRadius: 23,
-    
   },
   switchText: {
     fontSize: 18,
@@ -324,31 +327,31 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 20,
     paddingHorizontal: 10,
-    width:'50%'
+    width: '50%'
   },
   forecastItem: {
     padding: 14,
-    marginBottom:12,
-    borderRadius:18,
-    justifyContent:'space-between',
-    borderColor:'#FF914D',
-    borderWidth:2
+    marginBottom: 12,
+    borderRadius: 18,
+    justifyContent: 'space-between',
+    borderColor: '#FF914D',
+    borderWidth: 2
   },
   forecastText: {
     fontSize: 16,
     color: "#333",
   },
-  activityItem:{
+  activityItem: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 8,
-    borderColor:'#FF914D',
-    borderWidth:1,
-    padding:8,
-    borderRadius:8,
-    backgroundColor:'#fff'
+    borderColor: '#FF914D',
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#fff'
   },
-  activityText:{
+  activityText: {
     fontSize: 16,
     marginLeft: 8,
   }

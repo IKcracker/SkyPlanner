@@ -73,7 +73,7 @@ const RegisterScreen = () => {
         }).start();
 
         Animated.timing(slideAnim, {
-            toValue: 0, // Slide to original position
+            toValue: 0, 
             duration: 1500,
             useNativeDriver: true,
         }).start();
