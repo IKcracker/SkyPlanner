@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, TextInput, Button } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,7 @@ const MapScreen = ({ route = {} }) => {
   const { params = {} } = route;  
   const paramValue = params.paramName;
 
-  const [searchedLocation, setSearchedLocation] = useState(params.location || "");  // Initialize searchedLocation
+  const [searchedLocation, setSearchedLocation] = useState(params.location || "");
 
   useEffect(() => {
     if (searchedLocation) {
@@ -33,27 +33,8 @@ const MapScreen = ({ route = {} }) => {
     }
   }, [searchedLocation]);
 
-  const handleSearchLocation = async () => {
-    setLoading(true);
-    dispatch(getCurrentWeather(searchedLocation));
-    setLoading(false);
-  };
-
   return (
     <View style={{ flex: 1 }}>
-      <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          marginBottom: 10,
-          paddingLeft: 8,
-        }}
-        placeholder="Search for a location"
-        value={searchedLocation}
-        onChangeText={(text) => setSearchedLocation(text)}
-      />
-      <Button title="Search" onPress={handleSearchLocation} />
       {loading ? (
         <ActivityIndicator size="large" color="#FF914D" />
       ) : (

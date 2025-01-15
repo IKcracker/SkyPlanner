@@ -6,8 +6,9 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
 import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useRouter } from 'expo-router';
 
-function Home({ navigation }) {  // Add navigation prop
+function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
   const userName = useSelector((state) => state.user.userName);
@@ -15,6 +16,8 @@ function Home({ navigation }) {  // Add navigation prop
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
   const [favorite, setFavorite] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
     dispatch(restartState());
   }, []);
@@ -46,7 +49,7 @@ function Home({ navigation }) {  // Add navigation prop
   const handleSearch = () => {
     if (query.trim()) {
       dispatch(getForecastDays(query));
-      navigation.navigate('MapScreen', { paramName: query });  // Use query instead of value
+      router.push({ pathname: 'MapScreen', params: { paramName: query } });  
     }
   };
 
@@ -199,157 +202,156 @@ function Home({ navigation }) {  // Add navigation prop
                 <Text style={styles.activityText}>Swim</Text>
               </View>
             </View>
-            </Animatable.View>}
+          </Animatable.View>}
       </View>
     </View>
-  );
-}
-
+     );
+    }
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
-    backgroundColor: "#F9FAFC",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  header: {
-    marginBottom: 24,
-  },
-  greeting: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#555",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 34,
-    borderColor: "#E8DDD2",
-    marginVertical: 12,
-  },
-  input: {
-    flex: 1,
-    padding: 12,
-    fontSize: 16,
-    color: "#333",
-  },
-  current: {
-    alignItems: 'flex-end'
-  },
-  content: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 18,
-  },
-  weatherInfo: {
-    fontSize: 16,
-    color: "#333",
-    textAlign: "center",
-    marginTop: 20,
-  },
-  error: {
-    color: "red",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 20,
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  buttonPrimary: {
-    backgroundColor: "#FF914D",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 30,
-    marginLeft: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  heading: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    width: "100%",
-  },
-  location: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  locationName: {
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  today: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 20,
-    borderWidth: 1,
-    borderColor: "#FF914D",
-    borderRadius: 23,
-  },
-  switchText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  switchLabel: {
-    fontSize: 16,
-    color: "#555",
-  },
-  switch: {
-    transform: [{ translateX: 0 }],
-    padding: 5,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    width: '50%'
-  },
-  forecastItem: {
-    padding: 14,
-    marginBottom: 12,
-    borderRadius: 18,
-    justifyContent: 'space-between',
-    borderColor: '#FF914D',
-    borderWidth: 2
-  },
-  forecastText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  activityItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-    borderColor: '#FF914D',
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#fff'
-  },
-  activityText: {
-    fontSize: 16,
-    marginLeft: 8,
-  }
-});
+      container: {
+        padding: 20,
+        flex: 1,
+        backgroundColor: "#F9FAFC",
+      },
+      loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      header: {
+        marginBottom: 24,
+      },
+      greeting: {
+        fontSize: 48,
+        fontWeight: "bold",
+        color: "#333",
+        marginBottom: 6,
+      },
+      subtitle: {
+        fontSize: 18,
+        color: "#555",
+      },
+      searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderWidth: 1,
+        borderRadius: 34,
+        borderColor: "#E8DDD2",
+        marginVertical: 12,
+      },
+      input: {
+        flex: 1,
+        padding: 12,
+        fontSize: 16,
+        color: "#333",
+      },
+      current: {
+        alignItems: 'flex-end'
+      },
+      content: {
+        flex: 1,
+        backgroundColor: "#fff",
+        padding: 12,
+        borderRadius: 18,
+      },
+      weatherInfo: {
+        fontSize: 16,
+        color: "#333",
+        textAlign: "center",
+        marginTop: 20,
+      },
+      error: {
+        color: "red",
+        fontSize: 16,
+        textAlign: "center",
+        marginTop: 20,
+      },
+      buttons: {
+        flexDirection: "row",
+        justifyContent: "center",
+      },
+      buttonPrimary: {
+        backgroundColor: "#FF914D",
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 30,
+        marginLeft: 10,
+      },
+      buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+      },
+      heading: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        width: "100%",
+      },
+      location: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+      },
+      locationName: {
+        fontSize: 32,
+        fontWeight: "bold",
+      },
+      today: {
+        fontSize: 24,
+        fontWeight: "bold",
+      },
+      switchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginVertical: 20,
+        borderWidth: 1,
+        borderColor: "#FF914D",
+        borderRadius: 23,
+      },
+      switchText: {
+        fontSize: 18,
+        fontWeight: "bold",
+      },
+      switchLabel: {
+        fontSize: 16,
+        color: "#555",
+      },
+      switch: {
+        transform: [{ translateX: 0 }],
+        padding: 5,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        width: '50%'
+      },
+      forecastItem: {
+        padding: 14,
+        marginBottom: 12,
+        borderRadius: 18,
+        justifyContent: 'space-between',
+        borderColor: '#FF914D',
+        borderWidth: 2
+      },
+      forecastText: {
+        fontSize: 16,
+        color: "#333",
+      },
+      activityItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 8,
+        borderColor: '#FF914D',
+        borderWidth: 1,
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor: '#fff'
+      },
+      activityText: {
+        fontSize: 16,
+        marginLeft: 8,
+      }
+    });
 
-export default Home;
+  export default Home;
