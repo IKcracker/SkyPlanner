@@ -9,11 +9,13 @@ import { FadeIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addFavorates, getUser, removeFavorates } from "../../Redux/user/userSlice";
+import { getActions } from "../../Redux/activities/activities";
 
 function Home() {
   const [query, setQuery] = useState("South Africa");
   const { status, response, error } = useSelector((state) => state.weather);
   const USER = useSelector(state => state.user)
+  const Activities = useSelector(state => state.activities)
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const dispatch = useDispatch();
   const animatedSwitch = new Animated.Value(0);
@@ -27,6 +29,7 @@ function Home() {
     if (status === "idle") {
       dispatch(getForecastDays(query));
       dispatch(getUser());
+      dispatch(getActions())
     }
   }, [status]);
 
