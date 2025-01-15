@@ -115,15 +115,15 @@ function Home() {
               <Text style={{ fontSize: 14, fontWeight: "bold" }}>C°</Text>
             </View>
           </Animatable.View>
-          <Animatable.View animation='fadeInRight' duration={2000} style={{ alignItems: "center" }}>
+          <Animatable.View animation='fadeInRight' duration={2000} style={{ alignItems: "flex-end" }}>
             <Image
               source={{ uri: `https:${response?.current?.condition?.icon}` }}
-              style={{ width: 60, height: 60 }}
+              style={{ width: 60, height: 60  , backgroundColor:'#F9FAFC'}}
             />
             <Text style={{ fontWeight: "bold" }}>{response?.current?.condition?.text}</Text>
           </Animatable.View>
         </View>
-        <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center'}}>
+        <Animatable.View style={{flexDirection:"row" , justifyContent:'space-between', alignItems:'center', paddingVertical:12}}>
             <Animatable.Text style={{fontSize:16}}>Save to favorite</Animatable.Text>
             <Pressable style={{paddingRight:6}} onPress={()=> setFavorite(state => !state)}>
             <FontAwesome6 name={favorite? 'heart-circle-check':'heart' }size={32} color='#FF914D' />
@@ -161,7 +161,7 @@ function Home() {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <Animatable.View animation='fadeInRight' duration={2000} style={[styles.forecastItem, {flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}]}>
-                <View style={{ alignItems: "flex-start" }}>
+                <View style={{ alignItems:'flex-start'}}>
                     <Image source={{ uri: `https:${item?.day?.condition?.icon}` }} width={45} height={45}/>
                     <Text>{item?.day?.condition?.text}</Text>      
                 </View>
@@ -243,6 +243,9 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: "#333",
+  },
+  current:{
+    alignItems:'flex-end'
   },
   content: {
     flex: 1,
