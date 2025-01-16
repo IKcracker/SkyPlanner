@@ -8,10 +8,14 @@ function Profile() {
   const dispatch = useDispatch();
   const { response, status, error } = useSelector((state) => state.user);
 
-  // Fetch user data once when the component mounts
   useEffect(() => {
     dispatch(getUser());
   }, [dispatch]);
+
+  const handleReload = () => {
+    dispatch(getUser()); // Dispatch the action to reload user data
+  };
+
   if (status === "loading") {
     return (
       <View style={styles.loadingContainer}>
@@ -25,6 +29,9 @@ function Profile() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error?.message || "An error occurred"}</Text>
+        <Pressable style={styles.reloadButton} onPress={handleReload}>
+          <Text style={styles.reloadButtonText}>Retry</Text>
+        </Pressable>
       </View>
     );
   }
@@ -42,11 +49,10 @@ function Profile() {
             data={response?.favourites || []} 
             renderItem={({ item }) => (
               <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-              <Text style={styles.favoriteItem}>{item?.locationName || "No name"}</Text>
-              <Pressable style={{size: 24, color: "red"}} onPress={() => console.log("Delete")}>
+                <Text style={styles.favoriteItem}>{item?.locationName || "No name"}</Text>
+                <Pressable style={{size: 24, color: "red"}} onPress={() => console.log("Delete")}>
                   <FontAwesome6 name="trash" size={24} color="red" />
-              </Pressable>
-              
+                </Pressable>
               </View> 
             )}
             keyExtractor={(item) => item?.id?.toString() || item?.name || "key"} 
@@ -116,6 +122,17 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     color: "red",
+  },
+  reloadButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#FF914D",
+    borderRadius: 5,
+  },
+  reloadButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

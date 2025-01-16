@@ -4,10 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getForecastDays, restartState, setSearchedLocation  } from "../../Redux/weather/weather";
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as Animatable from 'react-native-animatable';
-
-import { FadeIn } from "react-native-reanimated";
-import Icon from "react-native-vector-icons/Ionicons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addFavorates, getUser, removeFavorates } from "../../Redux/user/userSlice";
 import { getActions } from "../../Redux/activities/activities";
 
@@ -35,7 +31,7 @@ function Home() {
 
   useEffect(() => {
     if (status === "failed" || USER.status === 'failed') {
-      console.log(error || USER.error);
+     {error && <Text style={styles.error}>Failed to fetch weather data. Please try again.</Text>}
     }
   }, [status, USER.status]);
 
@@ -60,19 +56,26 @@ function Home() {
     }
   };
 
-  const handleAddFavorite = () => {
-    if(!favorite)
-    {
-      if (response?.location) {
-      const locationName = response.location.name;
-      const id = USER?.response?._id;
-      const data = { locationName, id };
+const handleAddFavorite = () => {
+  if (response?.location) {
+    const locationName = response.location.name;
+    const userId = USER?.response?._id;
+
+    if (favorite) {
+      // Dispatch action to remove from favorites
+      const data = { locationName, userId };
+      dispatch(removeFavorates(data));
+    } else {
+      // Dispatch action to add to favorites
+      const data = { locationName, userId };
       dispatch(addFavorates(data));
-      setFavorite(state => !state);
     }
-    }
-  
-  };
+
+    // Toggle the favorite state
+    setFavorite((prevState) => !prevState);
+  }
+};
+
 
   if (status === "loading" && USER.status === 'loading') {
     return (
@@ -212,26 +215,50 @@ function Home() {
     Recommended Activities based on the weather
   </Text>
 
-  {Activities?.response?.activities.length === 0 ? (
-    <Animatable.View>
-      <Text>Sorry, we are still working on more recommendations. Try another location.</Text>
-    </Animatable.View>
-  ) : (
-    <FlatList
-      data={Activities?.response?.activities || []}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) =>
-        response?.current?.condition?.text.includes(item.condition) ? (
-          <Animatable.View animation="fadeIn" duration={2000} style={styles.activityItem}>
-            <FontAwesome6 name="check-circle" size={24} color="#FF914D" />
-            <Text style={styles.activityText}>{item?.activity}</Text>
-          </Animatable.View>
-        ) : null // Don't render anything if condition doesn't match
-      }
-    />
-  )}
+{status === "failed" ? (
+  <Text style={styles.error}>Failed to load weather data. Please try again later.</Text>
+) : (
+<FlatList
+  data={Activities?.response?.activities || []}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item }) => {
+    const currentCondition = response?.current?.condition?.text?.toLowerCase()?.trim();
+    const activityCondition = item?.condition?.toLowerCase()?.trim();
+
+    // Debugging logs (optional for development)
+    console.log("Current Condition:", currentCondition);
+    console.log("Activity Condition:", activityCondition);
+
+    // Check for a match
+    if (currentCondition && activityCondition && currentCondition.includes(activityCondition)) {
+      return (
+        <Animatable.View animation="fadeIn" duration={2000} >
+          <View >
+            {item.activity.map((activity, index) => (
+              <View style={[styles.activityColumn,styles.activityItem,{flexDirection:'row',gap:12}]} key={index}>
+              <FontAwesome6 name="check-circle" size={24} color="#FF914D" style={styles.icon} />
+              <Text key={index} style={{fontSize:12,width:'90%'}} >
+              {activity}
+              </Text>
+              </View>
+            ))}
+          </View>
+        </Animatable.View>
+      );
+    }
+    return null; // No match, don't render the activity
+  }}
+  ListEmptyComponent={
+    <Text style={styles.error}>No activities available for the current condition.</Text>
+  }
+/>
+
+
+)}
+
 </Animatable.View>
 }
+
     </View>
   );
 }
