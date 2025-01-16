@@ -53,7 +53,7 @@ export const getForecastDays = createAsyncThunk(
     try {
         console.log(location)
       const response = await axios.get(
-        `http://api.weatherapi.com/v1/forecast.json?key=9b3693377e2f41f0b31103324251401&q=${location}&days=${5}`
+        `https://skyplanner-api-1.onrender.com/api/weather/forecast?city=${location}`
       );
       return response.data;
     } catch (error) {
