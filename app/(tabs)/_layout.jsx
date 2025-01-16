@@ -1,9 +1,11 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 function Layout() {
   return (
+
     <Tabs
       screenOptions={{
         tabBarStyle: { backgroundColor: "#fff" }, // Customize the tab bar background
@@ -12,6 +14,7 @@ function Layout() {
         tabBarInactiveTintColor: "#999", // Inactive tab color
       }}
     >
+      <StatusBar backgroundColor="Transparent" translucent/>
       <Tabs.Screen
         name="home"
         options={{
@@ -35,7 +38,7 @@ function Layout() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="map" color={color} size={size || 24} />
+            <FontAwesome name="map-marker" color={color} size={size || 24} />
           ),
         }}
       />

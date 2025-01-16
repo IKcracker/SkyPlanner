@@ -91,9 +91,14 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
               />
             </View>
-            <Animatable.View animation="fadeInUp" duration={1500}>
+            <Animatable.View animation="fadeInLeft" duration={1500}>
               <Pressable style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
+              </Pressable>
+            </Animatable.View>
+              <Animatable.View animation="fadeInRight" duration={1500}>
+              <Pressable style={styles.button} onPress={()=> router.navigate('(auth)/register')}>
+                <Text style={styles.buttonText}>Register</Text>
               </Pressable>
             </Animatable.View>
           </ScrollView>
