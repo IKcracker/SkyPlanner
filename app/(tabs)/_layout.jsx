@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 
 function Layout() {
@@ -34,11 +34,11 @@ function Layout() {
         }}
       />
       <Tabs.Screen
-        name="map"
+        name="MapScreen"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="map-marker" color={color} size={size || 24} />
+            <FontAwesome6 name="location-dot" color={color} size={size || 24} />
           ),
         }}
       />
